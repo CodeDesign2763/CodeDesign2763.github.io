@@ -8,6 +8,9 @@
 
 	<!-- Глобальные переменные -->
 	
+	<!-- Флаг завершения заказа -->
+	var f_Order_Completed=false;
+	
 	<!-- Ссылки на документы соответствующих фреймов -->
 	<!-- (синтаксический сахар) -- >
 	var Goods_doc;
@@ -25,7 +28,14 @@
 		Show:function()
 			{
 			this.Label.innerText=this.Name;
+			},
+		Clear:function()
+			{
+			this.Ind=-1;
+			this.Name="Ничего не выбрано";
+			this.Show();
 			}
+		
 		}
 		
 	<!-- Количество товара -->
@@ -39,8 +49,8 @@
 		
 		}
 	
-	<!-- Функции для работы с кнопками -->
-	var Btn={
+	<!-- Функции для работы с управляющими элементами -->
+	var CtrlElem={
 		Lock:function(Name)
 			{
 			CartControl_doc.getElementsByName(Name)[0].disabled=true;
@@ -56,7 +66,6 @@
 		SetOnclickFn:function(Name,Fn)
 			{
 			CartControl_doc.getElementsByName(Name)[0].addEventListener("click", Fn);
-			//CartControl_doc.getElementsByName(Name)[0].onclick=Fn;
 			}
 		}
 	
@@ -91,117 +100,39 @@
 		ItemAmount.Amount=0;
 		ItemAmount.Show();
 		<!-- Блокировка кнопок -->
-		Btn.Lock("button_add");
-		Btn.Lock("button_clear");
-		Btn.Lock("button_complete");
+		CtrlElem.Lock("button_add");
+		CtrlElem.Lock("button_change");
+		CtrlElem.Lock("button_clear");
+		CtrlElem.Lock("button_complete");
+		<!-- Блокировка поля количества единиц товара -->
+		CtrlElem.Lock("text_number");
+		<!-- Обнулить значение выбранного товара -->
+		SelectedItem.Clear();
+		<!-- Сообщения -->
+		ActionLog.Message("Корзина очищена");
+		
 	}
 	<!-- Функция для добавления товара в корзину -->
-	//function Add_Item_To_Cart()
-	//{
-		//var amount=CartControl_doc.forms.FormCartControl.elements.text_number.value;
-		////alert("Amount="+amount);
-		//var table=Cart_doc.getElementById("CartTable");
-		//console.log(table);
-		//if (!CartArr.hasOwnProperty(SelectedItem.Ind))
-		//<!-- Этот товар НЕ присутствует в корзине -->
-		//if (!isNaN(parseInt(amount))) 
-		//if (parseInt(amount)>0)
-		//{
-			//<!-- Введено корректное количество товара -->
-			//console.log("Выбранный элемент="+SelectedItem.Ind);
-			//CartArr[SelectedItem.Ind]=[amount,amount*AvailableItemsArr[SelectedItem.Ind][2],table.rows.length-1];
-			//console.log("Индекс элемента в таблице CartArr"+CartArr[SelectedItem.Ind][2]);
-			//TotalCost=TotalCost+CartArr[SelectedItem.Ind][1];
-			//var LastRow=table.rows[table.rows.length-1];
-			//table.deleteRow(table.rows.length-1);
-			
-			//var tr=Cart_doc.createElement("TR");
-			
-			//var td1=Cart_doc.createElement("TD");
-			//var td2=Cart_doc.createElement("TD");
-			//var td3=Cart_doc.createElement("TD");
-			//var td4=Cart_doc.createElement("TD");
-			//var td5=Cart_doc.createElement("TD");
-			//var Cart_image=Cart_doc.createElement("IMG");
-			
-			//Cart_image.src=AvailableItemsArr[SelectedItem.Ind][0];
-			//Cart_image.width="100";
-			//td1.appendChild(Cart_image);
-			//td2.appendChild(Cart_doc.createTextNode(AvailableItemsArr[SelectedItem.Ind][1]));
-			//td3.appendChild(Cart_doc.createTextNode(AvailableItemsArr[SelectedItem.Ind][2]));
-			//td4.appendChild(Cart_doc.createTextNode(CartArr[SelectedItem.Ind][0]));
-			//td5.appendChild(Cart_doc.createTextNode(CartArr[SelectedItem.Ind][1]));
-			
-			//tr.appendChild(td1);
-			//tr.appendChild(td2);
-			//tr.appendChild(td3);
-			//tr.appendChild(td4);
-			//tr.appendChild(td5);
-			
-			//console.log(tr);
-			
-			//table.appendChild(tr);
-			//table.appendChild(LastRow);
-			//table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
-			
-			//ActionLog.Message("В корзину добавлен товар \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
-			//<!--Блокировка разблокировка кнопок -->
-			//Btn.Unlock("button_clear");
-			//Btn.Unlock("button_complete");
-			//Btn.Unlock("button_change");
-			//Btn.Lock("button_add");
-			
-			//ActionLog.Message("Кнопка очиски корзины разблокирована");
-			//ActionLog.Message("Кнопка завершения заказа разблокирована");
-		//}
-		//else
-		//<!-- Введено некорректное количество твоара-->
-		//ActionLog.Message("Ошибка! Введено неверное количество товара!");
-		//else 
-		//<!-- Ошибка! Товар присутствует в корзине -->
-		//ActionLog.Message("Ошибка! Товар присутствует в корзине!");
-	
-	//};
 	function Add_Item_To_Cart()
 	{
 		var amount=CartControl_doc.forms.FormCartControl.elements.text_number.value;
-		alert("Amount="+amount);
+		//alert("Amount="+amount);
 		var table=Cart_doc.getElementById("CartTable");
-		<!-- Введено корректное количество товара? -->
+		if (!CartArr.hasOwnProperty(SelectedItem.Ind))
+		<!-- Этот товар НЕ присутствует в корзине -->
 		if (!isNaN(parseInt(amount))) 
 		if (parseInt(amount)>0)
 		{
-		  <!-- Корректное -->
-		  <!-- Этот товар присутствует в корзине? -->
-		  if (CartArr.hasOwnProperty(SelectedItem.Ind))
-		  {
-			<!-- Товар присутствует в корзине -->
-			<!-- Последнее значение итоговой стоимости -->
-			var Last_Cost=CartArr[SelectedItem.Ind][1];
-			CartArr[SelectedItem.Ind][0]=amount;
-			CartArr[SelectedItem.Ind][1]=amount*AvailableItemsArr[SelectedItem.Ind][2];
-			TotalCost=TotalCost+CartArr[SelectedItem.Ind][1]-Last_Cost;
-			alert("ROW"+CartArr[SelectedItem.Ind][2]);
-			<!-- Изменяем значения количества и стоимости -->
-			table.rows[CartArr[SelectedItem.Ind][2]].cells[3].innerText=CartArr[SelectedItem.Ind][0];
-			table.rows[CartArr[SelectedItem.Ind][2]].cells[4].innerText=CartArr[SelectedItem.Ind][1];
-			<!-- Изменяем значение итоговой стоимости -->
-			table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
-			ActionLog.Message("Введено новое значение количества товара \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
-			
-			
-		  }
-		  
-		  else 
-		  {
-			<!-- Товар НЕ присутствует в корзине -->
-			alert("Выбранный элемент="+SelectedItem.Ind);
+			<!-- Введено корректное количество товара -->
 			CartArr[SelectedItem.Ind]=[amount,amount*AvailableItemsArr[SelectedItem.Ind][2],table.rows.length-1];
-			alert(CartArr[SelectedItem.Ind][2]);
 			TotalCost=TotalCost+CartArr[SelectedItem.Ind][1];
+			
+			<!-- Сохраняем указатель на последнюю строку -->
 			var LastRow=table.rows[table.rows.length-1];
+			<!-- Удаляем последнюю строку в таблице -->
 			table.deleteRow(table.rows.length-1);
 			
+			<!-- Создаем пустую строку и ячейки вне таблицы -->
 			var tr=Cart_doc.createElement("TR");
 			
 			var td1=Cart_doc.createElement("TD");
@@ -209,45 +140,96 @@
 			var td3=Cart_doc.createElement("TD");
 			var td4=Cart_doc.createElement("TD");
 			var td5=Cart_doc.createElement("TD");
-			var Cart_image=Cart_doc.createElement("IMG");
 			
+			<!-- Картинка товара -->
+			var Cart_image=Cart_doc.createElement("IMG");
 			Cart_image.src=AvailableItemsArr[SelectedItem.Ind][0];
 			Cart_image.width="100";
+			
+			<!-- Заполняем ячейки новой строки -->
 			td1.appendChild(Cart_image);
 			td2.appendChild(Cart_doc.createTextNode(AvailableItemsArr[SelectedItem.Ind][1]));
 			td3.appendChild(Cart_doc.createTextNode(AvailableItemsArr[SelectedItem.Ind][2]));
 			td4.appendChild(Cart_doc.createTextNode(CartArr[SelectedItem.Ind][0]));
 			td5.appendChild(Cart_doc.createTextNode(CartArr[SelectedItem.Ind][1]));
 			
+			<!-- Присоединяем ячейки к строке -->
 			tr.appendChild(td1);
 			tr.appendChild(td2);
 			tr.appendChild(td3);
 			tr.appendChild(td4);
 			tr.appendChild(td5);
 			
+			<!-- Добавляем к таблице новую строку и удаленную ранее строку -->
 			table.appendChild(tr);
 			table.appendChild(LastRow);
+			<!-- Выводим обновленное значение TotalCost -->
 			table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
 			
+			
+			<!--Блокировка разблокировка кнопок -->
+			CtrlElem.Unlock("button_clear");
+			CtrlElem.Unlock("button_complete");
+			CtrlElem.Unlock("button_change");
+			CtrlElem.Lock("button_add");
+			
 			ActionLog.Message("В корзину добавлен товар \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
-			<!-- Разблокировать кнопку очиски корзины и завершения заказа -->
-			Btn.Unlock("button_clear");
-			Btn.Unlock("button_complete");
-			ActionLog.Message("Кнопка очиски корзины разблокирована");
-			ActionLog.Message("Кнопка завершения заказа разблокирована");
-			
-			
-			
-			
-		  }
-		  
 		}
 		else
-		<!-- Некорректное -->
+		<!-- Введено некорректное количество твоара-->
 		ActionLog.Message("Ошибка! Введено неверное количество товара!");
-		
+		else 
+		<!-- Ошибка! Товар присутствует в корзине -->
+		<!-- Нужно для отладки -->
+		ActionLog.Message("Ошибка! Товар присутствует в корзине!");
 	};
 	
+	<!-- Функция для изменения количества товара в корзине -->
+	function Edit_Item_In_Cart()
+	{
+		var amount=CartControl_doc.forms.FormCartControl.elements.text_number.value;
+		var table=Cart_doc.getElementById("CartTable");
+		if (CartArr.hasOwnProperty(SelectedItem.Ind))
+		<!-- Этот товар НЕ присутствует в корзине -->
+		if (!isNaN(parseInt(amount))) 
+		if (parseInt(amount)>0)
+		{
+			<!-- Товар присутствует в корзине -->
+			<!-- Последнее значение итоговой стоимости -->
+			var Last_Cost=CartArr[SelectedItem.Ind][1];
+			CartArr[SelectedItem.Ind][0]=amount;
+			CartArr[SelectedItem.Ind][1]=amount*AvailableItemsArr[SelectedItem.Ind][2];
+			TotalCost=TotalCost+CartArr[SelectedItem.Ind][1]-Last_Cost;
+			<!-- Изменяем значения количества и стоимости -->
+			table.rows[CartArr[SelectedItem.Ind][2]].cells[3].innerText=CartArr[SelectedItem.Ind][0];
+			table.rows[CartArr[SelectedItem.Ind][2]].cells[4].innerText=CartArr[SelectedItem.Ind][1];
+			<!-- Изменяем значение итоговой стоимости -->
+			table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
+			ActionLog.Message("Введено новое значение количества товара \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
+		}
+		else
+		<!-- Введено некорректное количество твоара-->
+		ActionLog.Message("Ошибка! Введено неверное количество товара!");
+		else 
+		<!-- Ошибка! Товар присутствует в корзине -->
+		<!-- Нужно для отладки -->
+		ActionLog.Message("Ошибка! Товар отсутствует в корзине!");
+	};
+	function Complete_Order()
+	{
+		<!-- Блокировка всех кнопок -->
+		CtrlElem.Lock("button_add");
+		CtrlElem.Lock("button_change");
+		CtrlElem.Lock("button_clear");
+		CtrlElem.Lock("button_delete");
+		CtrlElem.Lock("button_complete");
+		<!-- Блокировка поля ввода -->
+		CtrlElem.Lock("text_number");
+		f_Order_Completed=true;
+		<!-- Сообщение -->
+		ActionLog.Message("Заказ завершен");
+		
+	}
 	<!-- Функция для добавления товара в список доступных -->
 	function Add_Goods(GoodsImage,GoodsName,GoodsPrice)
 		{
@@ -269,9 +251,10 @@
 			tr.appendChild(td3);
 			<!-- Обработчик двойного клика по ряду AvailableItemsTable -->
 			tr.ondblclick=function()
-			{
+			{	
+				if (f_Order_Completed==false) 
+				{
 				<!-- Определяем индекс выделенного товара -->
-				
 				<!-- Замыкание -->
 				SelectedItem.Ind=ID;
 				
@@ -295,9 +278,9 @@
 						ItemAmount.Amount=CartArr[SelectedItem.Ind][0];
 						ItemAmount.Show();
 						<!-- Блокировка/разблокирование кнопок -->
-						Btn.Lock("button_add");
-						Btn.Unlock("button_change");
-						Btn.Unlock("button_delete");
+						CtrlElem.Lock("button_add");
+						CtrlElem.Unlock("button_change");
+						CtrlElem.Unlock("button_delete");
 					}
 				else 
 					{
@@ -306,11 +289,12 @@
 						ItemAmount.Amount=0;
 						ItemAmount.Show();
 						<!-- Блокировка/разблокирование кнопок -->
-						Btn.Unlock("button_add");
-						Btn.Lock("button_change");
-						Btn.Lock("button_delete");
+						CtrlElem.Unlock("button_add");
+						CtrlElem.Lock("button_change");
+						CtrlElem.Lock("button_delete");
 					}
 				ActionLog.Message("Выбран товар \""+GoodsName+"\"");
+				}
 			};
 			table.appendChild(tr);
 			<!-- Отражение операции в журнале -->
@@ -449,9 +433,14 @@
 			<!-- Сообщение о начале работы -->
 			ActionLog.Message("Выберете товар для покупки");
 			<!-- Обработка нажатия на кнопку button_add -->
-			Btn.SetOnclickFn("button_add",Add_Item_To_Cart);
+			CtrlElem.SetOnclickFn("button_add",Add_Item_To_Cart);
+			<!-- Обработка нажатия на кнопку button_change -->
+			CtrlElem.SetOnclickFn("button_change",Edit_Item_In_Cart);
 			<!-- Обработка нажатия на кнопку button_clear -->
-			Btn.SetOnclickFn("button_clear",Clear_Cart);
+			CtrlElem.SetOnclickFn("button_clear",Clear_Cart);
+			<!-- Обработка нажатия на кнопку button_complete -->
+			CtrlElem.SetOnclickFn("button_complete",Complete_Order);
+			
 			<!-- Блокировка клавиши Enter для формы FormCartControl -->
 			CartControl_doc.forms.FormCartControl.addEventListener('keydown', 
 				function(ev) 
