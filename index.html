@@ -76,7 +76,6 @@
 			}
 		}
 	
-	function testxx(){alert("XXXX");};	
 	<!-- Журнал (лог) -->
 	var ActionLog={
 		TextField:null,
@@ -119,7 +118,9 @@
 		<!-- Обнулить значение выбранного товара -->
 		SelectedItem.Clear();
 		<!-- Сообщения -->
+		ActionLog.Message("Состояние \"Очистка корзины\" достигнуто");
 		ActionLog.Message("Корзина очищена");
+		ActionLog.Message("Состояние \"Ожидание выбора товара при отсутств. тов. в корзине\" достигнуто");
 		
 	}
 	<!-- Функция для добавления товара в корзину -->
@@ -185,6 +186,8 @@
 			CtrlElem.Lock("button_add");
 			
 			ActionLog.Message("В корзину добавлен товар \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
+			ActionLog.Message("Состояние \"Товар добавлен в корзину\" достигнуто");
+			ActionLog.Message("Состояние \"Редактирование позиции в корзине\" достигнуто");
 		}
 		else
 		<!-- Введено некорректное количество твоара-->
@@ -216,6 +219,7 @@
 			table.rows[CartArr[SelectedItem.Ind][2]].cells[4].innerText=CartArr[SelectedItem.Ind][1];
 			<!-- Изменяем значение итоговой стоимости -->
 			table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
+			ActionLog.Message("Состояние \"Изменение количества товара\" достигнуто");
 			ActionLog.Message("Введено новое значение количества товара \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
 		}
 		else
@@ -238,6 +242,7 @@
 		CtrlElem.Lock("text_number");
 		f_Order_Completed=true;
 		<!-- Сообщение -->
+		ActionLog.Message("Конечное состояние достигнуто");
 		ActionLog.Message("Заказ завершен");
 		
 	}
@@ -246,6 +251,7 @@
 		
 		var table=Cart_doc.getElementById("CartTable");
 		<!-- Сообщение -->
+		ActionLog.Message("Состояние \"Удаление товара из корзины\" достигнуто");
 		ActionLog.Message("Товар \""+SelectedItem.Name+"\" удален");
 		<!-- Пересчитываем стоимость -->
 		TotalCost=TotalCost-CartArr[SelectedItem.Ind][1];
@@ -257,7 +263,7 @@
 		delete CartArr[SelectedItem.Ind];
 		<!-- После удаления товар не выбран -->
 		SelectedItem.Clear();
-		<!-- Информация о количестве отстуствует -->
+		<!-- Информация о количестве отсутствует -->
 		ItemAmount.Clear();
 		<!-- Блокировка управляющих элементов -->
 		CtrlElem.Lock("text_number");
@@ -275,7 +281,10 @@
 		{
 			CtrlElem.Lock("button_clear");
 			CtrlElem.Lock("button_complete");
+			ActionLog.Message("Состояние \"Ожидание выбора товара при отсутств. тов. в корзине\" достигнуто");
 		}
+		else
+			ActionLog.Message("Состояние \"Ожидание выбора товара c тов. в корзине\" достигнуто");
 	}
 	<!-- Функция для добавления товара в список доступных -->
 	function Add_Goods(GoodsImage,GoodsName,GoodsPrice)
@@ -340,6 +349,7 @@
 						CtrlElem.Unlock("button_add");
 						CtrlElem.Lock("button_change");
 						CtrlElem.Lock("button_delete");
+						ActionLog.Message("Состояние \"Добавление выбранного товара в корзину\" достигнуто");
 					}
 				ActionLog.Message("Выбран товар \""+GoodsName+"\"");
 				}
@@ -440,8 +450,8 @@
 			+"</tr>"
 			+"<tr>"
 			+"<td align='center' colspan='2'>"
-				+"<textarea name='ActionLogField' cols='40'" 
-				+"rows='5' style='width:300px; height:150px; resize:none'" 
+				+"<textarea name='ActionLogField' cols='60'" 
+				+"rows='5' style='width:400px; height:150px; resize:none'" 
 				+"disabled value=''>"
 				+"</textarea>"
 				
@@ -506,6 +516,8 @@
 			);
 			<!-- Настройка отображения количества предметов -->
 			ItemAmount.TextField=CartControl_doc.forms.FormCartControl.elements.text_number;
+			ActionLog.Message("Состояние \"Инициализация\" достигнуто");
+			ActionLog.Message("Состояние \"Ожидание выбора товара при отсутств. тов. в корзине\" достигнуто");
 			
 			
 		};

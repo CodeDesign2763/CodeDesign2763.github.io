@@ -1,0 +1,98 @@
+@startuml
+
+'Описание состояний
+state "Инициализация" as state_init
+state_init:Entry /
+state_init:Настройка UI
+state_init:Загрузка доступных товаров
+state_init:Настройка польз. объектов
+state_init:  и глоб. перем.
+
+state "Ожид. выбора товара\n при отсутств. тов. в корзине" as state_wait0
+state_wait0:Entry /
+state_wait0:Заблокировать все кнопки
+state_wait0:Заблокировать поле количества
+state_wait0:и очистить его
+state_wait0:Отменить выбор товара
+
+state "Добавл. выбр. товара в корзину" as state_add
+state_add:Entry /
+state_add:Разбл. кнопку добавления 
+state_add:Разбл. поле количества
+state_add:Забл. кнопку изм. кол-ва
+state_add:Забл. кнопку удаления
+
+state "Товар добавлен в корзину" as state_addf
+state_addf:Entry /
+state_addf:Add_Item_To_Cart()
+state_addf:Добавл. стр. в табл. CartTable
+state_addf:Обн. знач. сум. стоимости
+
+state "Редактирование позиции в корзине" as state_edit
+state_edit:Entry /
+state_edit:Забл. кнопку добавить 
+state_edit:Разбл. кнопку редакт. кол-ва 
+state_edit:Разбл. кн. удаления из корзины 
+state_edit:Разбл. кн. очистки корзины
+state_edit:Разбл. кн. завершения заказа
+
+state "Изм. кол-ва товара" as state_edited
+state_edited:Entry /
+state_edited:Edit_Item_In_Cart()
+state_edited:Изм. знач. кол-ва и стоим.
+state_edited:в табл. CartTable
+state_edited:Обн. знач. сум. стоимости
+
+state "Удаление товара из корзины" as state_delete
+state_delete:Entry /
+state_delete:Delete_Item()
+state_delete:Обн. знач. сум. стоимости
+state_delete:Удаление соотв. стр.
+state_delete:из табл. CartTable
+state_delete:Отмена выделения товара
+state_delete:Блокировка поля кол-ва
+state_delete:Блокировка кн. добавления
+state_delete:Блокировка кн. изм. кол-ва
+state_delete:Блокировка кн. удаления
+
+state "Ожид. выбора товара\n c тов. в корзине" as state_wait1
+
+state c1 <<choice>>
+
+state "Очистка корзины" as state_clear_cart
+state_clear_cart: Entry /
+state_clear_cart: Clear_Cart()
+state_clear_cart: Обн. знач. сум. стоим.
+state_clear_cart: Очистка таблицы CartTable
+state_clear_cart: Очистка списка CartArray
+state_clear_cart: Отмена выбора товара
+
+'Описание переходов
+[*] --> state_init : window.onload
+state_init --> state_wait0
+state_wait0 --> state_add : Дв. клик по строке табл.\n AvailableItemsTable
+state_add --> state_addf : Нажата кн. добавления \n И указ. корректное кол-во товара
+state_addf --> state_edit
+state_edit-->state_edited : Нажата кн. изм. кол-ва \n И указ. корректное кол-во товара
+state_edited --> state_edit
+state_edit-->state_add : Выбран другой товар,\n отсутств. в корзине
+state_edit--->state_edit : Выбран другой товар,\n присутств. в корзине
+state_edit-->state_delete : Нажата кнопка \n удаления товара
+state_delete --> c1
+c1 --> state_wait0 : Больше в корзине\n нет товаров
+c1 --> state_wait1 : В корзине еще \n есть товары
+state_wait1 --> state_add : Выбран товар, \n отсутствующий в корзине
+state_wait1 --> state_edit : Выбран товар, \n имеющийся в корзине
+state_edit-->state_clear_cart : Нажата кнопка \n очистки корзины
+state_clear_cart-->state_wait0
+
+state_wait1-->state_clear_cart : Нажата кнопка \n очистки корзины
+state_wait1-->state_clear_cart : Нажата кнопка \n очистки корзины
+
+state_add-->state_clear_cart : Нажата кнопка \n очистки корзины
+
+state_edit --> [*] : Нажата кнопка \n завершения заказа
+state_wait1 --> [*] : Нажата кнопка \n завершения заказа
+state_add --> [*] : Нажата кнопка \n завершения заказа
+
+@enduml
