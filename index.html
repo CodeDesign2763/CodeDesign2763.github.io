@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache">
+    <title>ЛР по дисциплине ОСПО "Веб-программирование на клиентской стороне" (ВолгГТУ)</title>
+    <!-- Стили для оформления таблиц -->
+   
   </head>
   <script>
 
@@ -360,7 +363,8 @@
 				+"<b>Доступные товары</b>"
 				+"</td>"
 				+"</tr>"
-				+"<tr style='background: lightgreen;'>"
+				+"<tr style='background: lightgreen; color: ;"
+				+"font-family: sans-serif;'>"
 				+"<td>Изображение</td>"
 				+"<td>Наименование</td>"
 				+"<td>Цена</td>"
@@ -381,16 +385,16 @@
 				+"</td>"
 			+"</tr>"
 			+"<tr>"
-			+"<td bgcolor='yellow'>"
-				+"Выбран товар"
+			+"<td bgcolor='yellow' style='font-family: sans-serif'>"
+				+"<b>Выбран товар</b>"
 			+"</td>"
 			+"<td id='SelectedItemElement'>"
 				+"Hичего не выбрано"
 			+"</td>"
 			+"</tr>"
 			+"<tr>"
-			+"<td bgcolor='yellow'>"
-				+"Количество"
+			+"<td bgcolor='yellow' style='font-family: sans-serif'>"
+				+"<b>Количество единиц</b>"
 			+"</td>"
 			+"<td>"
 				+"<input type='text' maxlength='4' name='text_number'"
@@ -429,8 +433,9 @@
 				+"'Завершить заказ' disabled onclick=''>"
 			+"</tr>"
 			+"<tr>"
-			+"<td bgcolor='yellow' align='center' colspan='2'>"
-				+"Журнал действий"
+			+"<td bgcolor='yellow' align='center' colspan='2'"
+			+"style='font-family: sans-serif'>"
+				+"<b>Журнал действий</b>"
 			+"</td>"
 			+"</tr>"
 			+"<tr>"
@@ -453,7 +458,8 @@
 				+"<b>Содержимое корзины</b>"
 				+"</td>"
 			+"</tr>"
-			+"<tr>"
+			+"<tr style='color: black;background: cyan"
+			+";font-family: sans-serif;font-weight:'>"
 			+"<td>Изображение</td>"
 			+"<td	>Наименование</td>"
 			+"<td>Цена</td>"
@@ -461,7 +467,9 @@
 			+"<td>Стоимость</td>"
 			+"</tr>"
 			+"<tr>"
-			+"<td colspan='4' style='color: white; background: red' align='center'>Итоговая стоимость</td>"
+			+"<td colspan='4' style='color: white; background: red;" 
+			+"font-family: sans-serif;font-weight:bold' align='center'>"
+			+"Итоговая стоимость</td>"
 			+"<td>0</td>"
 			+"</tr>"
 			+"</table>");
@@ -469,10 +477,10 @@
 			ActionLog.TextField=CartControl_doc.forms.FormCartControl.elements.ActionLogField;
 			<!-- Добавляем товары -->
 			Add_Goods("Goods/mouse.jpeg","Мышь","300");
-			Add_Goods("Goods/keyboard.jpeg","Клавиатура","800");
-			Add_Goods("Goods/motherboard.jpeg","Материнская плата","5000");
-			Add_Goods("Goods/smartphone.jpeg","Смартфон","10000");
-			Add_Goods("Goods/notebook.jpeg","Ноутбук","50000");
+			Add_Goods("Goods/router.jpg","Роутер","3000");
+			Add_Goods("Goods/battery.jpg","Аккумулятор","200");
+			Add_Goods("Goods/phone.jpg","Мобильный телефон","1000");
+			Add_Goods("Goods/notebook.jpg","Ноутбук","10000");
 			<!-- Название выбранного товара -->
 			SelectedItem.Label=CartControl_doc.getElementById("SelectedItemElement")
 			<!-- Сообщение о начале работы -->
