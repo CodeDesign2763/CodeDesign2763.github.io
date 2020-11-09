@@ -45,8 +45,12 @@
 		Show:function()
 			{
 			this.TextField.value=this.Amount;
+			},
+		Clear:function()
+			{
+			this.Amount="";
+			this.Show();
 			}
-		
 		}
 	
 	<!-- Функции для работы с управляющими элементами -->
@@ -104,8 +108,11 @@
 		CtrlElem.Lock("button_change");
 		CtrlElem.Lock("button_clear");
 		CtrlElem.Lock("button_complete");
+		CtrlElem.Lock("button_delete");
 		<!-- Блокировка поля количества единиц товара -->
 		CtrlElem.Lock("text_number");
+		<!-- Убрать информацию о количестве товара -->
+		ItemAmount.Clear();
 		<!-- Обнулить значение выбранного товара -->
 		SelectedItem.Clear();
 		<!-- Сообщения -->
@@ -167,10 +174,11 @@
 			table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
 			
 			
-			<!--Блокировка разблокировка кнопок -->
+			<!--Блокировка/разблокировка кнопок -->
 			CtrlElem.Unlock("button_clear");
 			CtrlElem.Unlock("button_complete");
 			CtrlElem.Unlock("button_change");
+			CtrlElem.Unlock("button_delete");
 			CtrlElem.Lock("button_add");
 			
 			ActionLog.Message("В корзину добавлен товар \""+AvailableItemsArr[SelectedItem.Ind][1]+"\"");
@@ -223,12 +231,48 @@
 		CtrlElem.Lock("button_clear");
 		CtrlElem.Lock("button_delete");
 		CtrlElem.Lock("button_complete");
-		<!-- Блокировка поля ввода -->
+		<!-- Блокировка поля ввода количества-->
 		CtrlElem.Lock("text_number");
 		f_Order_Completed=true;
 		<!-- Сообщение -->
 		ActionLog.Message("Заказ завершен");
 		
+	}
+	function Delete_Item()
+	{
+		
+		var table=Cart_doc.getElementById("CartTable");
+		<!-- Сообщение -->
+		ActionLog.Message("Товар \""+SelectedItem.Name+"\" удален");
+		<!-- Пересчитываем стоимость -->
+		TotalCost=TotalCost-CartArr[SelectedItem.Ind][1];
+		<!-- Изменяем значение итоговой стоимости в таблице CartTable-->
+		table.rows[table.rows.length-1].cells[1].innerText=TotalCost;
+		<!-- Удаляем соответствующую строку из таблицы CartTable -->
+		table.deleteRow(CartArr[SelectedItem.Ind][2]);
+		<!-- Удаляем соответствующий элемент из списка CartArr -->
+		delete CartArr[SelectedItem.Ind];
+		<!-- После удаления товар не выбран -->
+		SelectedItem.Clear();
+		<!-- Информация о количестве отстуствует -->
+		ItemAmount.Clear();
+		<!-- Блокировка управляющих элементов -->
+		CtrlElem.Lock("text_number");
+		CtrlElem.Lock("button_add");
+		CtrlElem.Lock("button_change");
+		CtrlElem.Lock("button_delete");
+		
+		/* Пуста ли корзина после удаления товара */
+		var CartIsEmpty=true;
+		var Item;
+		for (Item in CartArr) CartIsEmpty=false;
+		<!-- Если в корзине не осталось товаров -->
+		<!-- Заблокировать некоторые кнопки -->
+		if (CartIsEmpty==true) 
+		{
+			CtrlElem.Lock("button_clear");
+			CtrlElem.Lock("button_complete");
+		}
 	}
 	<!-- Функция для добавления товара в список доступных -->
 	function Add_Goods(GoodsImage,GoodsName,GoodsPrice)
@@ -265,9 +309,10 @@
 				
 				if (CartControl_doc.forms.FormCartControl.elements.button_add.disabled==true)
 				{
-					CartControl_doc.forms.FormCartControl.elements.button_add.disabled=false;
-					CartControl_doc.forms.FormCartControl.elements.text_number.disabled=false;
+					CtrlElem.Unlock("button_add");
+					CtrlElem.Unlock("text_number");
 					ActionLog.Message("Кнопка \"Добавить выбранный товар в корзину\" разблокирована");
+					ActionLog.Message("Поле для ввода количества товара разблокировано");
 					
 				} 
 				
@@ -440,6 +485,8 @@
 			CtrlElem.SetOnclickFn("button_clear",Clear_Cart);
 			<!-- Обработка нажатия на кнопку button_complete -->
 			CtrlElem.SetOnclickFn("button_complete",Complete_Order);
+			<!-- Обработка нажатия на кнопку button_delete -->
+			CtrlElem.SetOnclickFn("button_delete",Delete_Item);
 			
 			<!-- Блокировка клавиши Enter для формы FormCartControl -->
 			CartControl_doc.forms.FormCartControl.addEventListener('keydown', 
