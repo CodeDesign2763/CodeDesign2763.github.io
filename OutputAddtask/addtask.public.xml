@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="addtask" schema="public" type="PostgreSQL - 9.6.19">
+   <sequences>
+      <sequence increment="1" name="building_id_seq" startValue="1"/>
+      <sequence increment="1" name="employee_id_seq" startValue="1"/>
+      <sequence increment="1" name="event_id_seq" startValue="1"/>
+      <sequence increment="1" name="exhibit_id_seq" startValue="1"/>
+      <sequence increment="1" name="showroom_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="building" numRows="2" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('building_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="5" type="smallserial" typeCode="5">
+            <child column="id_building" foreignKey="showroom_id_building_fkey" implied="false" onDeleteCascade="false" schema="public" table="showroom"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="adress" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="name" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="phone" nullable="true" remarks="" size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="id_employee" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="building_id_employee_fkey" implied="false" onDeleteCascade="false" schema="public" table="employee"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="building_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="employee" numRows="2" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('employee_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="id_employee" foreignKey="building_id_employee_fkey" implied="false" onDeleteCascade="false" schema="public" table="building"/>
+            <child column="id_employee" foreignKey="event2employee_id_employee_fkey" implied="false" onDeleteCascade="false" schema="public" table="event2employee"/>
+            <child column="id_employee" foreignKey="showroom_id_employee_fkey" implied="false" onDeleteCascade="false" schema="public" table="showroom"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="fullname" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="phone" nullable="true" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="adress" nullable="true" remarks="" size="200" type="varchar" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="employee_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="event" numRows="2" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('event_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial" typeCode="-5">
+            <child column="id_event" foreignKey="event2employee_id_event_fkey" implied="false" onDeleteCascade="false" schema="public" table="event2employee"/>
+            <child column="id_event" foreignKey="exhibit2event_id_event_fkey" implied="false" onDeleteCascade="false" schema="public" table="exhibit2event"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="startdate" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="enddate" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="description" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="event_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="event2employee" numRows="2" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id_event" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="event2employee_id_event_fkey" implied="false" onDeleteCascade="false" schema="public" table="event"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="id_employee" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="event2employee_id_employee_fkey" implied="false" onDeleteCascade="false" schema="public" table="employee"/>
+         </column>
+         <primaryKey column="id_event" sequenceNumberInPK="1"/>
+         <primaryKey column="id_employee" sequenceNumberInPK="2"/>
+         <index name="event2employee_pkey" unique="true">
+            <column ascending="true" name="id_event"/>
+            <column ascending="true" name="id_employee"/>
+         </index>
+      </table>
+      <table name="exhibit" numRows="2" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('exhibit_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="id_exhibit" foreignKey="exhibit2event_id_exhibit_fkey" implied="false" onDeleteCascade="false" schema="public" table="exhibit2event"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="dateoforigin" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="id_showroom" nullable="true" remarks="" size="5" type="int2" typeCode="5">
+            <parent column="id" foreignKey="exhibit_id_showroom_fkey" implied="false" onDeleteCascade="false" schema="public" table="showroom"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="exhibit_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="exhibit2event" numRows="0" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id_exhibit" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="exhibit2event_id_exhibit_fkey" implied="false" onDeleteCascade="false" schema="public" table="exhibit"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="id_event" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="exhibit2event_id_event_fkey" implied="false" onDeleteCascade="false" schema="public" table="event"/>
+         </column>
+         <primaryKey column="id_exhibit" sequenceNumberInPK="1"/>
+         <primaryKey column="id_event" sequenceNumberInPK="2"/>
+         <index name="exhibit2event_pkey" unique="true">
+            <column ascending="true" name="id_exhibit"/>
+            <column ascending="true" name="id_event"/>
+         </index>
+      </table>
+      <table name="showroom" numRows="2" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('showroom_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="5" type="smallserial" typeCode="5">
+            <child column="id_showroom" foreignKey="exhibit_id_showroom_fkey" implied="false" onDeleteCascade="false" schema="public" table="exhibit"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="id_employee" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="showroom_id_employee_fkey" implied="false" onDeleteCascade="false" schema="public" table="employee"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="id_building" nullable="false" remarks="" size="5" type="int2" typeCode="5">
+            <parent column="id" foreignKey="showroom_id_building_fkey" implied="false" onDeleteCascade="false" schema="public" table="building"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="showroom_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+   </tables>
+</database>
